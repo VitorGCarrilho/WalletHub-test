@@ -2,10 +2,15 @@ package com.ef.service.impl;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.Map;
 
 import org.junit.Test;
 
+import com.ef.domain.enumeration.Duration;
 import com.ef.service.ParserService;
 
 /**
@@ -18,10 +23,19 @@ public class ParserServiceImplTest {
 	
 	private ParserServiceImpl parserService = new ParserServiceImpl();
 	
+	@Test
+	public void retrieveArguments() {
+		parserService.retrieveArguments(ARGUMENTS);
+		LocalDate date = LocalDate.of(2017, Month.JANUARY, 1);
+		LocalTime time = LocalTime.of(13, 00);
+		assertEquals(LocalDateTime.of(date, time), parserService.startDate);
+		assertEquals(Duration.DAILY, parserService.duration);
+		assertEquals(250L, parserService.threshold);
+	}
 	
 	@Test
-	public void retrieveArgumentsTest() {
-		Map<String, String> argumentsMap = parserService.retrieveArguments(ARGUMENTS);
+	public void argumentsToMapTest() {
+		Map<String, String> argumentsMap = parserService.argumentsToMap(ARGUMENTS);
 
 		assertEquals("2017-01-01.13:00:00", argumentsMap.get(ParserService.START_DATE));
 		assertEquals("daily", argumentsMap.get(ParserService.DURATION));
