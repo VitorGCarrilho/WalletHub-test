@@ -17,6 +17,8 @@ public interface ParserService {
 
 	public static final String THRESHOLD = "--threshold";
 	
+	public static final String ACCESS_LOG = "--accesslog=";
+	
 	/**
 	 * Method that parse the file
 	 * **/
