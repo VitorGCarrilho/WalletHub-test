@@ -1,7 +1,9 @@
 package com.ef.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import com.ef.domain.enumeration.Duration;
 import com.ef.dto.LogDto;
 
 /**
@@ -22,6 +24,9 @@ public interface LogService {
 
 	/**
 	 * @param logDtoList
+	 * @param threshold 
+	 * @param duration 
+	 * @param startDate 
 	 */
-	void checkRequest(List<LogDto> logDtoList);
+	void checkRequest(List<LogDto> logDtoList, LocalDateTime startDate, Duration duration, long threshold);
 }

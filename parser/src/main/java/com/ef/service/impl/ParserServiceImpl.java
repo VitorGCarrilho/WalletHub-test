@@ -1,6 +1,5 @@
 package com.ef.service.impl;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +29,8 @@ public class ParserServiceImpl implements ParserService {
 	protected long threshold;
 
 	protected Path accessLog;
-	
-	protected LogService logService = new LogServiceImpl();
+
+	private LogService logService;
 
 	/*
 	 * @see com.ef.service.ParserService#parseFile(java.lang.String[])
@@ -41,7 +40,7 @@ public class ParserServiceImpl implements ParserService {
 		retrieveArguments(args);
 		List<LogDto> logDtoList = retrieveData();
 		logService.saveAll(logDtoList);
-		logService.checkRequest(logDtoList);
+		logService.checkRequest(logDtoList, startDate, duration, threshold);
 	}
 
 	protected List<LogDto> retrieveData() {
@@ -52,15 +51,13 @@ public class ParserServiceImpl implements ParserService {
 			ex.printStackTrace();
 			throw new RuntimeException("Error when trying to read file");
 		}
-		return contents.stream()
-					.map(logService::mapToLogDto)
-					.collect(Collectors.toList());
+		return contents.parallelStream().map(logService::mapToLogDto).collect(Collectors.toList());
 	}
 
 	protected void retrieveArguments(String[] args) {
 		Map<String, String> argumentMap = argumentsToMap(args);
 		startDate = LocalDateTime.parse(argumentMap.get(START_DATE),
-		DateTimeFormatter.ofPattern("yyyy-MM-dd.HH:mm:ss"));
+				DateTimeFormatter.ofPattern("yyyy-MM-dd.HH:mm:ss"));
 		duration = Duration.valueOf(argumentMap.get(DURATION).toUpperCase());
 		threshold = Long.parseLong(argumentMap.get(THRESHOLD));
 		String uri = argumentMap.getOrDefault(ACCESS_LOG,
@@ -72,9 +69,13 @@ public class ParserServiceImpl implements ParserService {
 	 * @param args
 	 */
 	protected Map<String, String> argumentsToMap(String[] args) {
-		return Arrays.asList(args).stream().map(argument -> argument.split(EQUALS_OPERATOR))
+		return Arrays.asList(args).parallelStream().map(argument -> argument.split(EQUALS_OPERATOR))
 				.collect(Collectors.toMap(argument -> argument[0], argument -> argument[1]));
 
+	}
+	
+	public ParserServiceImpl(LogService logService){
+		this.logService = logService;
 	}
 
 }
