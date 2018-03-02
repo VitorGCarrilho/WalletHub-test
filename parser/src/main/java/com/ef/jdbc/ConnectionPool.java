@@ -38,7 +38,7 @@ public class ConnectionPool {
 		
 		// Creates an Instance of GenericObjectPool That Holds Our Pool of Connections Object!
 		gPool = new GenericObjectPool();
-		gPool.setMaxActive(5);
+		gPool.setMaxActive(50);
 
 		// Creates a ConnectionFactory Object Which Will Be Use by the Pool to Create the Connection Object!
 		ConnectionFactory cf = new DriverManagerConnectionFactory(jdbcUrl, jdbcUser, jdbcPassword);

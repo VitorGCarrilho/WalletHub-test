@@ -7,5 +7,15 @@ import com.ef.dto.LogDto;
  *
  */
 public interface LogRepository {
+	
+	/**
+	 * The log insert statement
+	 */
+	public static final String INSERT_STATEMENT = "INSERT INTO WH_LOG (REQUEST_DATE, IP, REQUEST, STATUS, AGENT) VALUES (?, ?, ?, ?, ?)";
+
+	/**
+	 * The method that saves a given log
+	 * @param logDto
+	 * **/
 	void save(LogDto logDto);
 }

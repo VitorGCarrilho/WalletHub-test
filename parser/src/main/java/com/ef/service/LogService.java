@@ -29,4 +29,9 @@ public interface LogService {
 	 * @param startDate 
 	 */
 	void checkRequest(List<LogDto> logDtoList, LocalDateTime startDate, Duration duration, long threshold);
+
+	/**
+	 * @param logDto
+	 */
+	void save(LogDto logDto);
 }

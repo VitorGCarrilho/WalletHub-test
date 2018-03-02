@@ -1,14 +1,18 @@
 package com.ef.service.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.ef.domain.enumeration.Duration;
@@ -22,14 +26,29 @@ import com.ef.service.ParserService;
  */
 public class ParserServiceImpl implements ParserService {
 
+	/**
+	 * The start date
+	 **/
 	protected LocalDateTime startDate;
 
+	/**
+	 * The duration
+	 **/
 	protected Duration duration;
 
+	/**
+	 * The threshold request
+	 **/
 	protected long threshold;
 
+	/**
+	 * The access log path
+	 **/
 	protected Path accessLog;
 
+	/**
+	 * log service
+	 **/
 	private LogService logService;
 
 	/*
@@ -38,22 +57,41 @@ public class ParserServiceImpl implements ParserService {
 	@Override
 	public void parseFile(String[] args) {
 		retrieveArguments(args);
-		List<LogDto> logDtoList = retrieveData();
-		logService.saveAll(logDtoList);
-		logService.checkRequest(logDtoList, startDate, duration, threshold);
+		saveData();
 	}
 
-	protected List<LogDto> retrieveData() {
-		List<String> contents = null;
-		try {
-			contents = Files.readAllLines(accessLog);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			throw new RuntimeException("Error when trying to read file");
+	/**
+	 * The method that read the data from file and persist it.
+	 **/
+	protected void saveData() {
+		ExecutorService executor = Executors.newFixedThreadPool(20);
+		try (InputStream in = Files.newInputStream(accessLog);
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				final String log = line;
+				
+				executor.execute(() -> {
+					LogDto logDto = logService.mapToLogDto(log);
+					logService.save(logDto);
+				});
+			}
+
+		} catch (IOException e) {
+			RuntimeException runtime = new RuntimeException();
+			runtime.addSuppressed(e);
+			throw runtime;
+		} finally {
+			if (executor != null){
+				executor.shutdown();
+			}
 		}
-		return contents.parallelStream().map(logService::mapToLogDto).collect(Collectors.toList());
 	}
 
+	/**
+	 * The method that retrieve the program arguments
+	 **/
 	protected void retrieveArguments(String[] args) {
 		Map<String, String> argumentMap = argumentsToMap(args);
 		startDate = LocalDateTime.parse(argumentMap.get(START_DATE),
@@ -66,6 +104,8 @@ public class ParserServiceImpl implements ParserService {
 	}
 
 	/**
+	 * The method that map the argument and the value
+	 * 
 	 * @param args
 	 */
 	protected Map<String, String> argumentsToMap(String[] args) {
@@ -73,8 +113,8 @@ public class ParserServiceImpl implements ParserService {
 				.collect(Collectors.toMap(argument -> argument[0], argument -> argument[1]));
 
 	}
-	
-	public ParserServiceImpl(LogService logService){
+
+	public ParserServiceImpl(LogService logService) {
 		this.logService = logService;
 	}
 

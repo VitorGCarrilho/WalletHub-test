@@ -59,4 +59,12 @@ public class LogServiceImpl implements LogService {
 	public LogServiceImpl(LogRepository logRepository) {
 		this.logRepository = logRepository;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.ef.service.LogService#save(com.ef.dto.LogDto)
+	 */
+	@Override
+	public void save(LogDto logDto) {
+		logRepository.save(logDto);		
+	}
 }

@@ -9,6 +9,7 @@ import java.time.Month;
 import java.util.Map;
 
 import org.junit.Test;
+import org.mockito.Mock;
 
 import com.ef.domain.enumeration.Duration;
 import com.ef.service.ParserService;
@@ -21,7 +22,10 @@ public class ParserServiceImplTest {
 	
 	private static final String [] ARGUMENTS = new String [] {"--startDate=2017-01-01.13:00:00","--duration=daily","--threshold=250"};
 	
-	private ParserServiceImpl parserService = new ParserServiceImpl();
+	@Mock
+	private LogServiceImpl logService;
+	
+	private ParserServiceImpl parserService = new ParserServiceImpl(logService);
 	
 	@Test
 	public void retrieveArguments() {
@@ -41,5 +45,4 @@ public class ParserServiceImplTest {
 		assertEquals("daily", argumentsMap.get(ParserService.DURATION));
 		assertEquals("250", argumentsMap.get(ParserService.THRESHOLD));
 	}
-
 }
