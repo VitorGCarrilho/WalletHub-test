@@ -44,18 +44,6 @@ public class LogServiceImpl implements LogService {
 		logDtoList.parallelStream().forEach(logRepository::save);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ef.service.LogService#checkRequest(java.util.List,
-	 * java.time.LocalDateTime, com.ef.domain.enumeration.Duration, long)
-	 */
-	@Override
-	public void checkRequest(List<LogDto> logDtoList, LocalDateTime startDate, Duration duration, long threshold) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public LogServiceImpl(LogRepository logRepository) {
 		this.logRepository = logRepository;
 	}

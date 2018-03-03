@@ -13,12 +13,14 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.ef.domain.enumeration.Duration;
 import com.ef.dto.LogDto;
 import com.ef.service.LogService;
 import com.ef.service.ParserService;
+import com.ef.service.ThresholdService;
 
 /**
  * @author Vitor Carrilho - 27/02/2018
@@ -50,6 +52,11 @@ public class ParserServiceImpl implements ParserService {
 	 * log service
 	 **/
 	private LogService logService;
+	
+	/**
+	 * threshold service
+	 **/
+	private ThresholdService thresholdService;
 
 	/*
 	 * @see com.ef.service.ParserService#parseFile(java.lang.String[])
@@ -87,20 +94,33 @@ public class ParserServiceImpl implements ParserService {
 				executor.shutdown();
 			}
 		}
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+			thresholdService.manageThresholdRequest(startDate, duration, threshold);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * The method that retrieve the program arguments
 	 **/
 	protected void retrieveArguments(String[] args) {
-		Map<String, String> argumentMap = argumentsToMap(args);
-		startDate = LocalDateTime.parse(argumentMap.get(START_DATE),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd.HH:mm:ss"));
-		duration = Duration.valueOf(argumentMap.get(DURATION).toUpperCase());
-		threshold = Long.parseLong(argumentMap.get(THRESHOLD));
-		String uri = argumentMap.getOrDefault(ACCESS_LOG,
-				System.getProperty("user.dir").concat("/").concat("access.log"));
-		accessLog = Paths.get(uri);
+		try {
+			Map<String, String> argumentMap = argumentsToMap(args);
+			startDate = LocalDateTime.parse(argumentMap.get(START_DATE),
+					DateTimeFormatter.ofPattern("yyyy-MM-dd.HH:mm:ss"));
+			duration = Duration.valueOf(argumentMap.get(DURATION).toUpperCase());
+			threshold = Long.parseLong(argumentMap.get(THRESHOLD));
+			String uri = argumentMap.getOrDefault(ACCESS_LOG,
+					System.getProperty("user.dir").concat("/").concat("access.log"));
+			accessLog = Paths.get(uri);
+		} catch (Exception e) {
+			IllegalArgumentException illegalArgument = new IllegalArgumentException("Illegal arguments: ");
+			illegalArgument.addSuppressed(e);
+			throw illegalArgument;
+		}
 	}
 
 	/**
@@ -114,8 +134,9 @@ public class ParserServiceImpl implements ParserService {
 
 	}
 
-	public ParserServiceImpl(LogService logService) {
+	public ParserServiceImpl(LogService logService, ThresholdService thresholdService) {
 		this.logService = logService;
+		this.thresholdService = thresholdService;
 	}
 
 }

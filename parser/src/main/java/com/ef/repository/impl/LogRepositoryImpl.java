@@ -3,9 +3,13 @@ package com.ef.repository.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.sql.DataSource;
 
+import com.ef.domain.enumeration.Duration;
+import com.ef.dto.BlockedIpDto;
 import com.ef.dto.LogDto;
 import com.ef.jdbc.ConnectionPool;
 import com.ef.repository.LogRepository;
@@ -39,6 +43,15 @@ public class LogRepositoryImpl implements LogRepository {
 			throw runtime;
 		}
 
+	}
+
+	/*
+	 * @see com.ef.repository.LogRepository#findThresholdRequest(java.time.LocalDateTime, com.ef.domain.enumeration.Duration, long)
+	 */
+	@Override
+	public List<BlockedIpDto> findThresholdRequest(LocalDateTime startDate, Duration duration, long threshold) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 
 import com.ef.domain.enumeration.Duration;
 import com.ef.service.ParserService;
+import com.ef.service.ThresholdService;
 
 /**
  * @author Vitor Carrilho - 27/02/2018
@@ -25,7 +26,10 @@ public class ParserServiceImplTest {
 	@Mock
 	private LogServiceImpl logService;
 	
-	private ParserServiceImpl parserService = new ParserServiceImpl(logService);
+	@Mock
+	private ThresholdService thresholdService;
+	
+	private ParserServiceImpl parserService = new ParserServiceImpl(logService, thresholdService);
 	
 	@Test
 	public void retrieveArguments() {
