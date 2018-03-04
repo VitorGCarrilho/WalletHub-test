@@ -7,5 +7,14 @@ import com.ef.dto.BlockedIpDto;
  *
  */
 public interface BlockedIpRepository {
+	
+	/**
+	 * The block insert statement
+	 */
+	public static final String INSERT_STATEMENT = "INSERT INTO WH_BLOCKED_IP (IP, REQUEST_NUMBER, INITIAL_DATE, FINAL_DATE) VALUES (?, ?, ?, ?)";
+	
+	/**
+	 * The method that block an given ip
+	 */
 	void blockIp(BlockedIpDto blockedIpDto);
 }
