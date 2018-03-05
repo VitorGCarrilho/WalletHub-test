@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 import com.ef.domain.enumeration.Duration;
 import com.ef.dto.BlockedIpDto;
 import com.ef.dto.LogDto;
-import com.ef.jdbc.ConnectionPool;
 import com.ef.repository.LogRepository;
 
 /**
@@ -21,13 +20,17 @@ import com.ef.repository.LogRepository;
  *
  */
 public class LogRepositoryImpl implements LogRepository {
+	
+	/**
+	 * Data source
+	 * **/
+	private DataSource dataSource;
 
 	/*
 	 * @see com.ef.repository.LogRepository#save(com.ef.dto.LogDto)
 	 */
 	@Override
 	public void save(LogDto logDto) {
-		DataSource dataSource = ConnectionPool.getDataSource();
 
 		try (Connection connection = dataSource.getConnection();
 				PreparedStatement stmt = connection.prepareStatement(INSERT_STATEMENT)) {
@@ -53,7 +56,6 @@ public class LogRepositoryImpl implements LogRepository {
 	 */
 	@Override
 	public List<BlockedIpDto> findThresholdRequest(LocalDateTime startDate, Duration duration, long threshold) {
-		DataSource dataSource = ConnectionPool.getDataSource();
 		List<BlockedIpDto> blockedIpDtoList = new ArrayList<>();
 		LocalDateTime finalDate = startDate.plus(1, duration.getTimeUnit());
 
@@ -82,4 +84,7 @@ public class LogRepositoryImpl implements LogRepository {
 		return blockedIpDtoList;
 	}
 
+	public LogRepositoryImpl(DataSource dataSource){
+		this.dataSource = dataSource;
+	}
 }

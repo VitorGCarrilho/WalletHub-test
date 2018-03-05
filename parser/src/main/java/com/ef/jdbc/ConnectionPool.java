@@ -24,7 +24,7 @@ public class ConnectionPool {
 	private static DataSource dataSource;
 
 	static {
-		//Class.forName(JDBC_DRIVER);
+		
 		Properties properties = new Properties();
 		try {
 			properties.load(Files.newInputStream(Paths.get("application.properties")));

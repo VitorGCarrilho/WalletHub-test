@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ef.jdbc.ConnectionPool;
 import com.ef.repository.BlockedIpRepository;
 import com.ef.repository.LogRepository;
 import com.ef.repository.impl.BlockedIpRepositoryImpl;
@@ -27,9 +28,9 @@ public class Parser {
 	
 	public static void main(String[] args) throws IOException {
 		logger.info("The parser is starting");
-		LogRepository logRepoistory = new LogRepositoryImpl();
+		LogRepository logRepoistory = new LogRepositoryImpl(ConnectionPool.getDataSource());
 		LogService logService = new LogServiceImpl(logRepoistory);
-		BlockedIpRepository blockedIpRepository = new BlockedIpRepositoryImpl();
+		BlockedIpRepository blockedIpRepository = new BlockedIpRepositoryImpl(ConnectionPool.getDataSource());
 		ThresholdService thresholdService = new ThresholdServiceImpl(blockedIpRepository, logRepoistory);
 		ParserService parserService = new ParserServiceImpl(logService, thresholdService);
 		parserService.parseFile(args);
