@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import com.ef.dto.BlockedIpDto;
 import com.ef.repository.BlockedIpRepository;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 /**
  * @author Vitor Carrilho - 03/03/2018
@@ -44,6 +45,8 @@ public class BlockedIpRepositoryImpl implements BlockedIpRepository {
 			stmt.setTimestamp(4, Timestamp.valueOf(blockedIpDto.getFinalDate()));
 			stmt.execute();
 			logger.info("Blocking ip {}", new Object[]{blockedIpDto.getIp()});
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			logger.error("The ip {} is already blocked", blockedIpDto.getIp());
 		} catch (Exception e) {
 			RuntimeException runtime = new RuntimeException();
 			runtime.addSuppressed(e);
