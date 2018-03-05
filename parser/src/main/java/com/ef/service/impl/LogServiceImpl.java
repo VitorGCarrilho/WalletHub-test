@@ -1,10 +1,8 @@
 package com.ef.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import com.ef.builder.LogDtoBuilder;
-import com.ef.domain.enumeration.Duration;
 import com.ef.dto.LogDto;
 import com.ef.repository.LogRepository;
 import com.ef.service.LogService;
@@ -44,15 +42,15 @@ public class LogServiceImpl implements LogService {
 		logDtoList.parallelStream().forEach(logRepository::save);
 	}
 
-	public LogServiceImpl(LogRepository logRepository) {
-		this.logRepository = logRepository;
-	}
-
 	/* (non-Javadoc)
 	 * @see com.ef.service.LogService#save(com.ef.dto.LogDto)
 	 */
 	@Override
 	public void save(LogDto logDto) {
 		logRepository.save(logDto);		
+	}	
+	
+	public LogServiceImpl(LogRepository logRepository) {
+		this.logRepository = logRepository;
 	}
 }

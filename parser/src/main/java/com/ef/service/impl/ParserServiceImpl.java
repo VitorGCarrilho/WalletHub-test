@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ef.domain.enumeration.Duration;
 import com.ef.dto.LogDto;
 import com.ef.service.LogService;
@@ -27,6 +30,11 @@ import com.ef.service.ThresholdService;
  *
  */
 public class ParserServiceImpl implements ParserService {
+	
+	/**
+	 * The logger
+	 * **/
+	private static final Logger logger = LoggerFactory.getLogger(ParserService.class);
 
 	/**
 	 * The start date
@@ -72,6 +80,7 @@ public class ParserServiceImpl implements ParserService {
 	 **/
 	protected void saveData() {
 		ExecutorService executor = Executors.newFixedThreadPool(20);
+		logger.info("Reading file");
 		try (InputStream in = Files.newInputStream(accessLog);
 				BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
 
@@ -117,6 +126,7 @@ public class ParserServiceImpl implements ParserService {
 					System.getProperty("user.dir").concat("/").concat("access.log"));
 			accessLog = Paths.get(uri);
 		} catch (Exception e) {
+			logger.error("Illegal arguments");
 			IllegalArgumentException illegalArgument = new IllegalArgumentException("Illegal arguments: ");
 			illegalArgument.addSuppressed(e);
 			throw illegalArgument;

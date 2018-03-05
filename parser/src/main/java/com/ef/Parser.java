@@ -2,6 +2,9 @@ package com.ef;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ef.repository.BlockedIpRepository;
 import com.ef.repository.LogRepository;
 import com.ef.repository.impl.BlockedIpRepositoryImpl;
@@ -18,7 +21,12 @@ import com.ef.service.impl.ThresholdServiceImpl;
  *
  */
 public class Parser {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Parser.class);
+	
+	
 	public static void main(String[] args) throws IOException {
+		logger.info("The parser is starting");
 		LogRepository logRepoistory = new LogRepositoryImpl();
 		LogService logService = new LogServiceImpl(logRepoistory);
 		BlockedIpRepository blockedIpRepository = new BlockedIpRepositoryImpl();
